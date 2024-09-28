@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap"
+        rel="stylesheet">
+    <title>Eventia</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="overflow-x-hidden">
+
+    <main class="font-['DM_Sans'] relative sm:hidden bg-black">
+        <section id="eventCards" class="flex flex-col px-[20px]">
+        </section>
+        <section id="about"
+            class="fixed top-0 left-0 w-full h-full text-white pt-10 translate-y-[100%] overflow-x-hidden bg-black">
+        </section>
+    </main>
+
+    <div class="font-['DM_Sans'] relative max-sm:hidden h-screen w-screen grid place-content-center">
+        </main>
+        <h2 class="text-[30px] font-bold">Open on Mobile Or Shrink Window</h2>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"
+        integrity="sha512-7eHRwcbYkK4d9g/6tD/mhkf++eoTHwpNM9woBxtPUBWm67zeAfFC+HrdoE2GanKeocly/VxeLvIqwvCdk7qScg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script src="eventData.js"></script>
+
+    <script>
+
+
+        function createEventCard(event, id) {
+            return `
+                <div class="card h-[350px] overflow-hidden w-full rounded-[20px] mt-[10px] relative" onclick="about(${id})">
+                    <img src="${event.image}" class="h-full w-full object-cover object-top" alt="">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
+                    <div class="date absolute top-5 right-4 bg-white text-black py-2 px-4 rounded-[10px] flex flex-col">
+                        <span class="text-[20px] font-bold">${event.date.day}</span>
+                        <span class="text-[10px] font-[500]">${event.date.month}</span>
+                    </div>
+                    <div class="helpers absolute top-7 left-4 flex w-full">
+                        ${event.helpers.map((helper, index) => `
+                            <div class="circle-img w-11 h-11 rounded-full overflow-hidden border-2 border-white ${index !== 0 ? '-ml-5' : ''}">
+                                <img src="${helper.img}" alt="${helper.role}" class="w-full h-full object-cover">
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="content absolute bottom-0 left-0 right-0 text-white p-4 pb-7">
+                        <span class="text-[12px] opacity-60">${event.venueType}</span>
+                        <h3 class="text-xl font-bold mt-1">${event.title}</h3>
+                        <p class="text-[12px] opacity-80 mt-1">Voted ${event.participants} Participants'</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function createAboutCard(event) {
+            return `
+        <button class="absolute top-[10%] left-2 h-10 w-10 rounded-full grid place-content-center bg-white z-10 text-black" onclick="closeAbout()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="lucide lucide-chevron-left">
+                    <path d="m15 18-6-6 6-6" />
+                </svg>
+        </button>    
+        <div class="absolute top-0 left-0 w-full h-[350px] overflow-hidden">
+                <div class="absolute inset-0 backdrop-blur-[100px]"></div>
+                <img src="${event.image}" alt="">
+            </div>
+        <div class="card h-[350px] overflow-hidden w-full rounded-[20px] mt-[10px] relative">
+            <img src="${event.image}" class="image-cover h-full w-full object-cover object-top" alt="">
+            <div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
+            <div class="content absolute bottom-0 left-0 right-0 text-white p-4 pb-2">
+                <span class="text-[12px] opacity-60">${event.venueType}</span>
+                <h3 class="text-xl font-bold mt-1">${event.title}</h3>
+                <p class="text-[12px] opacity-80 mt-1">Voted ${event.participants} Participants'</p>
+            </div>
+        </div>
+        <div class="about px-[20px] h-fit w-full">
+            <div class="w-full mb-5">
+                <div class="text-white text-[18px] font-bold">About</div>
+                <p class="text-white opacity-80 text-[14px]">
+                    ${event.artist.about}
+                </p>
+            </div>
+            <div class="flex justify-between w-full">
+                <div class="flex items-center w-fit bg-white py-2 px-4 text-black text-[12px] gap-1 rounded-[10px] font-[500]">
+                    <span class="font-bold text-[20px]">${event.date.day}</span> ${event.date.month}
+                </div>
+                <div class="flex items-center w-fit bg-white py-2 px-4 text-black text-[14px] gap-2 rounded-[10px] font-[500]">
+                    Buy At <img src="logo.png" class="h-[28px]" alt="CrowdVolt">
+                </div>
+            </div>
+            <div class="w-full h-[1px] bg-[rgba(255,255,255,0.3)] my-5"></div>
+            <div class="flex items-center justify-center gap-[20px] w-full mb-5 mx-auto">
+                ${event.helpers.map(helper => `
+                    <div class="flex flex-col items-center">
+                        <div class="circle-img w-11 h-11 rounded-full overflow-hidden border-2 border-white ">
+                            <img src="${helper.img}" alt="${helper.role}" class="w-full h-full object-cover">
+                        </div>
+                        <div class="text-white opacity-80 text-[14px] mt-2">${helper.name}</div>
+                        <div class="text-white opacity-50 text-[12px]">${helper.role}</div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+        }
+
+        function about(id) {
+            const event = eventData.find(event => event.id === id);
+            if (event) {
+                const aboutSection = document.getElementById('about');
+                aboutSection.innerHTML = createAboutCard(event);
+                gsap.fromTo("#about",
+                    { y: "100%", opacity: 0 },
+                    { y: 0, opacity: 1, duration: 1, ease: "power2.out" }
+                );
+                gsap.fromTo("#about .image-cover",
+                    { y: "100%", opacity: 0 },
+                    { y: 0, opacity: 1, duration: 2, delay: 0.8, ease: "power2.out" }
+                );
+
+                document.body.style.overflowY = 'hidden';
+                document.getElementById('eventCards').style.overflowY = 'hidden';
+            }
+        }
+
+        function closeAbout() {
+            gsap.to("#about", {
+                y: "100%",
+                duration: 0.9,
+                ease: "power2.in",
+                onComplete: () => {
+                    document.body.style.overflowY = '';
+                    document.getElementById('eventCards').style.overflowY = '';
+                }
+            });
+        }
+
+        const eventCardsContainer = document.getElementById('eventCards');
+        eventData.forEach(event => {
+            eventCardsContainer.innerHTML += createEventCard(event, event.id);
+        });
+
+        gsap.from(".card", {
+            opacity: 0,
+            y: 50,
+            stagger: 0.2,
+            duration: 1,
+            ease: "power2.out"
+        });
+
+    </script>
+
+</body>
+
+</html>
